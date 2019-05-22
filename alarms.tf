@@ -7,6 +7,7 @@ locals {
     FreeableMemoryThreshold   = "${max(var.freeable_memory_threshold, 0)}"
     FreeStorageSpaceThreshold = "${max(var.free_storage_space_threshold, 0)}"
     SwapUsageThreshold        = "${max(var.swap_usage_threshold, 0)}"
+    DeadlocksCountThreshold   = "${max(var.deadlocks_count_threshold, 0)}"
   }
 }
 
@@ -128,6 +129,24 @@ resource "aws_cloudwatch_metric_alarm" "swap_usage_too_high" {
   statistic           = "Average"
   threshold           = "${local.thresholds["SwapUsageThreshold"]}"
   alarm_description   = "Average database swap usage over last 10 minutes too high, performance may suffer"
+  alarm_actions       = ["${aws_sns_topic.default.arn}"]
+  ok_actions          = ["${aws_sns_topic.default.arn}"]
+
+  dimensions {
+    DBInstanceIdentifier = "${var.db_instance_id}"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "deadlocks_count_too_high" {
+  alarm_name          = "deadlocks_count_too_high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "Deadlocks"
+  namespace           = "AWS/RDS"
+  period              = "600"
+  statistic           = "Sum"
+  threshold           = "${local.thresholds["DeadlocksCountThreshold"]}"
+  alarm_description   = "Sum deadlocks count over last 10 minutes too high, issue may occur"
   alarm_actions       = ["${aws_sns_topic.default.arn}"]
   ok_actions          = ["${aws_sns_topic.default.arn}"]
 

@@ -40,6 +40,7 @@ It's 100% Open Source and licensed under the [APACHE2](LICENSE).
 | CPU     | CPUCreditBalance | `<`                  | 20        | One credit equals 1 minute of 100% usage of a vCPU. 20 credits should give you enough time to a) fix the inefficiency, b) add capacity or c) don't use t2 type.                                        |
 | Memory  | FreeableMemory   | `<`                  | 64 MB     | This number is calculated from our experience with RDS workloads.                                                                                                                                      |
 | Memory  | SwapUsage        | `>`                  | 256 MB    | Sometimes you can not entirely avoid swapping. But once the database accesses paged memory, it will slow down.                                                                                         |
+| DB      | Deadlocks        | `>`                  | 0.1       | Deadlock occurs when there are multiple database connections running queries on the same set of data. Without any intervention, all threads involved would be stuck waiting for their resources.      |
 
 
 
@@ -86,6 +87,7 @@ module "rds_alarms" {
 | free_storage_space_threshold | The minimum amount of available storage space in Byte. | string | `2000000000` | no |
 | freeable_memory_threshold | The minimum amount of available random access memory in Byte. | string | `64000000` | no |
 | swap_usage_threshold | The maximum amount of swap space used on the DB instance in Byte. | string | `256000000` | no |
+| deadlocks_count_threshold | The sum of deadlock seen in the DB instance in Count. | string | `0.1` | no |
 
 ## Outputs
 

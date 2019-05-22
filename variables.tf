@@ -50,3 +50,11 @@ variable "swap_usage_threshold" {
 
   # 256 Megabyte in Byte
 }
+
+variable "deadlocks_count_threshold" {
+  description = "The sum of deadlocks on the DB instance."
+  type        = "string"
+  default     = 0.1
+
+  # should have no deadlock
+}
